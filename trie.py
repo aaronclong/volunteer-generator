@@ -8,23 +8,27 @@ class Trie:
     def __init__(self):
         self.children = {}
         self.value = None
+    def add(self, word, obj):
+        """ Easier API to load data
+        """
+        return self.add_name(0, word, obj)
     def add_index(self, letter):
         """ Add an index to the current node
         """
         if letter not in self.children:
             self.children[letter] = Trie()
         return self.children[letter]
-    def add_nam(self, index, name, obj):
+    def add_name(self, index, name, obj):
         """ Recursive name addition
             names must be in lower case though
         """
-        if index > len(name):
+        if index >= len(name):
             return False
         if name.islower() is False:
             raise Exception('Names must be in lower case')
         letter = ord(name[index])
         ref = self.add_index(letter) #reference next trie node in the range
-        if index == len(name):
+        if index == len(name)-1:
             ref.value = obj
             return True
         return ref.add_name(index+1, name, obj)
@@ -39,6 +43,9 @@ class Trie:
             for letter in name:
                 num = ord(letter)
                 if num not in cur.children:
-                    return False
-                cur = cur.children[cur]
+                    return None
+                cur = cur.children[num]
             return cur.value
+        else:
+            raise Exception('Names must be in lower case')
+
