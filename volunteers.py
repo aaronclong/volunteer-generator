@@ -18,11 +18,14 @@ class Volunteer:
         """
         name = '{} {}'.format(self.first_name.lower(), self.last_name.lower())
         obj = trie.search(name)
-        self.slack_handle = obj['name']
+        if obj is not None:
+            self.slack_handle = obj['name']
     def __str__(self):
         if self.slack_handle is None:
-            return 'No handle'
-        return '{} {} slack: {}'.format(self.first_name, self.last_name, self.slack_handle)
+            return '- {} {}\n'.format(self.first_name, self.last_name)
+        slack_link = 'https://codeforphilly.slack.com/messages/@'+ self.slack_handle
+        return '- {} {} [@{}]({})\n'.format(self.first_name, self.last_name,
+                                            self.slack_handle, slack_link)
 
 def get_users_slack(token):
     """ Pull Slack user list from the Code for Philly list
@@ -44,6 +47,7 @@ def read_volunteers():
     with open("volunteers.csv") as volunteers:
         reader = csv.reader(volunteers)
         group = [Volunteer(line) for line in reader]
+        group.pop(0)
     with open("config.yaml") as config:
         reader = yaml.load(config)
         user_list = get_users_slack(reader["slack"])
@@ -51,9 +55,11 @@ def read_volunteers():
             if 'real_name' not in user:
                 continue
             user_trie.add(user['real_name'].lower(), user)
-    map(lambda a: a.parse_slack(user_trie), group)
+    md_file = open('./volunters.md', 'w')
     for gr in group:
-        print(gr)
+        gr.parse_slack(user_trie)
+        md_file.write(str(gr))
+    md_file.close()
 
 if __name__ == '__main__':
     read_volunteers()
