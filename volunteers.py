@@ -55,7 +55,7 @@ def read_volunteers():
             if 'real_name' not in user:
                 continue
             user_trie.add(user['real_name'].lower(), user)
-    md_file = open('./volunters.md', 'w')
+    md_file = open('./volunteers.md', 'w')
     for gr in group:
         gr.parse_slack(user_trie)
         md_file.write(str(gr))
