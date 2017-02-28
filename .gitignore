@@ -1,0 +1,7 @@
+*.csv
+*.json
+*.md
+*.pyc
+.vscode/
+__pycache__/
+volunteer/
